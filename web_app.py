@@ -28,11 +28,10 @@ st.markdown("<p style='text-align: right; color: #4B5563; font-size: 15px; direc
 
 # 3. دالة ذكية لقراءة ملف الإكسل وتحديد مساره أوتوماتيكياً في الماك
 @st.cache_data
+# 3. دالة ذكية لقراءة ملف الإكسل المرفوع مباشرة في المستودع
+@st.cache_data
 def load_students_from_excel():
-    # البحث عن الملف داخل مجلد المشروع المخصص على سطح المكتب إجبارياً لمنع الأخطاء
-    desktop_dir = os.path.expanduser("~/Desktop")
-    excel_file = os.path.join(desktop_dir, "shawahed_project", "students_data.xlsx")
-    
+    excel_file = "students_data.xlsx"
     if os.path.exists(excel_file):
         df = pd.read_excel(excel_file, dtype={"السجل المدني": str})
         db = {}
@@ -45,6 +44,7 @@ def load_students_from_excel():
             }
         return db
     return {}
+
 
 students_database = load_students_from_excel()
 
@@ -77,7 +77,7 @@ else:
             
             # تحديد مسار الصورة داخل مجلد المشروع تلقائياً
             desktop_dir = os.path.expanduser("~/Desktop")
-            image_path = os.path.join(desktop_dir, "shawahed_project", student['card_image'])
+            image_path = os.path.join(desktop_dir, "shawahed_project", student['card_i
             
             if os.path.exists(image_path):
                 st.image(image_path, caption=f"البطاقة الرسمية للطالب: {student['name']}", use_column_width=True)
