@@ -23,12 +23,10 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# العبارة الترحيبية الجديدة والمخصصة بناءً على طلبك بدقة
+# العبارة الترحيبية الدقيقة والمخصصة بناءً على طلبك
 st.markdown("<p style='text-align: right; color: #4B5563; font-size: 15px; direction: rtl; font-weight: bold;'>اعزائي اولياء الأمور لتسهيل متابعة ابناءكم في مادة مهارات رقمية ومعرفة مستواهم يرجي كتابة السجل المدني في الاسفل</p>", unsafe_allow_html=True)
 
-# 3. دالة ذكية لقراءة ملف الإكسل وتحديد مساره أوتوماتيكياً في الماك
-@st.cache_data
-# 3. دالة ذكية لقراءة ملف الإكسل المرفوع مباشرة في المستودع
+# 3. دالة ذكية لقراءة ملف الإكسل المرفوع مباشرة في السيرفر
 @st.cache_data
 def load_students_from_excel():
     excel_file = "students_data.xlsx"
@@ -45,12 +43,11 @@ def load_students_from_excel():
         return db
     return {}
 
-
 students_database = load_students_from_excel()
 
 # 4. تصميم صندوق الدخول والاستعلام المحاذي لليمن
 if not students_database:
-    st.error("⚠️ لم يتم العثور على قاعدة البيانات الشاملة للطلاب 'students_data.xlsx' في مجلد shawahed_project.")
+    st.error("⚠️ لم يتم العثور على قاعدة البيانات الشاملة للطلاب 'students_data.xlsx' في السيرفر.")
 else:
     with st.container():
         st.markdown("<div style='background-color: #F3F4F6; padding: 25px; border-radius: 8px; border: 1px solid #E5E7EB; direction: rtl; text-align: right;'>", unsafe_allow_html=True)
@@ -75,14 +72,13 @@ else:
             st.info(f"📋 **الصف الدراسي:** {student['class']}")
             st.markdown(f"</div>", unsafe_allow_html=True)
             
-            # تحديد مسار الصورة داخل مجلد المشروع تلقائياً
-            desktop_dir = os.path.expanduser("~/Desktop")
-            image_path = os.path.join(desktop_dir, "shawahed_project", student['card_i
+            # تحديد مسار الصورة داخل السيرفر مباشرة بشكل صحيح ومغلق
+            image_path = student['card_image']
             
             if os.path.exists(image_path):
                 st.image(image_path, caption=f"البطاقة الرسمية للطالب: {student['name']}", use_column_width=True)
             else:
-                st.warning(f"⚠️ تم التحقق من السجل، ولكن لم يتم العثور على ملف الصورة: {student['card_image']} بداخل مجلد المشروع.")
+                st.warning(f"⚠️ تم التحقق من السجل، ولكن لم يتم العثور على ملف الصورة: {student['card_image']} بداخل السيرفر.")
         else:
             st.markdown(f"<div style='direction: rtl; text-align: right;'>", unsafe_allow_html=True)
             st.error("❌ عذراً، رقم السجل المدني غير صحيح أو غير مسجل في النظام الدراسي للعام الحالي!")
