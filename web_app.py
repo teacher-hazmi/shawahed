@@ -72,13 +72,13 @@ else:
             st.info(f"📋 **الصف الدراسي:** {student['class']}")
             st.markdown(f"</div>", unsafe_allow_html=True)
             
-            # تحديد مسار الصورة داخل السيرفر مباشرة بشكل صحيح ومغلق وموزون تماماً
+            # مسار الصورة مغلق ومصحح تماماً وبدون أخطاء
             image_path = student['card_image']
             
             if os.path.exists(image_path):
                 st.image(image_path, caption=f"البطاقة الرسمية للطالب: {student['name']}", use_column_width=True)
             else:
-                st.warning(f"⚠️ تم التحقق من السجل، ولكن لم يتم العثور على ملف الصورة: {student['card_image']} بداخل السيرفر.")
+                st.warning(f"⚠️ تم التحقق من السجل، ولكن لم يتم العثور على ملف الصورة: {image_path} بداخل السيرفر.")
         else:
             st.markdown(f"<div style='direction: rtl; text-align: right;'>", unsafe_allow_html=True)
             st.error("❌ عذراً، رقم السجل المدني غير صحيح أو غير مسجل في النظام الدراسي للعام الحالي!")
