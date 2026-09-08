@@ -36,7 +36,7 @@ def load_students_from_excel():
         for _, row in df.iterrows():
             sec_id = str(row["السجل المدني"]).strip()
             db[sec_id] = {
-                "name": row["اسم الطالب"].strip(),
+                "name": str(row["اسم الطالب"]).strip(),
                 "class": row["الصف"],
                 "card_num": int(row["رقم الصورة"])
             }
@@ -56,7 +56,7 @@ else:
         st.write("") 
         submit_button = st.button("🔍 عرض بطاقة المتابعة والنتائج", type="primary", use_container_width=True)
 
-    # 5. معالجة الضغط وعرض النتائج بناءً على مطابقة الاسم الذكية والآمنة
+    # 5. معالجة الضغط وعرض النتائج
     if submit_button:
         search_id = national_id.strip()
         if search_id in students_database:
@@ -67,27 +67,13 @@ else:
             st.info(f"📋 **الصف الدراسي:** {student['class']}")
             st.markdown("</div>", unsafe_allow_html=True)
             
-            # محاولة البحث عن الصورة بالاسم المباشر المكتوب داخل البطاقة أولاً، ثم بالرقم كخيار احتياطي
-            clean_name = student['name'].replace("بن ", "").replace(" ", "_")
-            possible_names = [
-                f"student_{student['card_num']}.png",
-                f"{student['name']}.png",
-                f"{clean_name}.png"
-            ]
-            
-            image_path = ""
-            for p_name in possible_names:
-                if os.path.exists(p_name):
-                    image_path = p_name
-                    break
-                    
-            if not image_path:
-                image_path = f"student_{student['card_num']}.png"
+            # تحديد مسار الصورة بناءً على أرقام الجدول المصححة
+            image_path = f"student_{student['card_num']}.png"
             
             if os.path.exists(image_path):
                 st.image(image_path, use_container_width=True)
             else:
-                st.warning(f"⚠️ تم التحقق من السجل، ولكن لم يتم العثور على ملف الصورة بداخل السيرفر.")
+                st.warning(f"⚠️ تم التحقق من السجل، ولكن لم يتم العثور على ملف الصورة: {image_path} بداخل السيرفر الجديد.")
         else:
             st.markdown("<div style='direction: rtl; text-align: right;'>", unsafe_allow_html=True)
             st.error("❌ عذراً، رقم السجل المدني غير صحيح أو غير مسجل في النظام الدراسي للعام الحالي!")
