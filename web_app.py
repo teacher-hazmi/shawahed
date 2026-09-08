@@ -76,7 +76,8 @@ else:
             image_path = student['card_image']
             
             if os.path.exists(image_path):
-                st.image(image_path, use_column_width=True)
+                                st.image(image_path, use_container_width=True)
+
             else:
                 st.warning(f"⚠️ تم التحقق من السجل، ولكن لم يتم العثور على ملف الصورة: {image_path} بداخل السيرفر.")
         else:
