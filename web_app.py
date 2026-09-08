@@ -76,8 +76,9 @@ else:
             image_path = student['card_image']
             
             if os.path.exists(image_path):
-                st.image(image_path, caption=f"البطاقة الرسمية للطالب: {student['name']}", use_column_width=True)
-            else:
+                            if os.path.exists(image_path):
+                st.image(image_path, use_column_width=True)
+
                 st.warning(f"⚠️ تم التحقق من السجل، ولكن لم يتم العثور على ملف الصورة: {image_path} بداخل السيرفر.")
         else:
             st.markdown(f"<div style='direction: rtl; text-align: right;'>", unsafe_allow_html=True)
