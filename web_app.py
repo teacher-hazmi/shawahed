@@ -36,9 +36,9 @@ def load_students_from_excel():
         for _, row in df.iterrows():
             sec_id = str(row["السجل المدني"]).strip()
             db[sec_id] = {
-                "name": row["اسم الطالب"],
+                "name": row["اسم الطالب"].strip(),
                 "class": row["الصف"],
-                "card_image": f"student_{int(row['رقم الصورة'])}.png"
+                "card_num": int(row["رقم الصورة"])
             }
         return db
     return {}
@@ -51,17 +51,12 @@ if not students_database:
 else:
     with st.container():
         st.markdown("<div style='background-color: #F3F4F6; padding: 25px; border-radius: 8px; border: 1px solid #E5E7EB; direction: rtl; text-align: right;'>", unsafe_allow_html=True)
-        
-        # خانة إدخال السجل المدني
         national_id = st.text_input("🔑 رقم السجل المدني للطالب:", max_chars=10)
-        
         st.markdown("</div>", unsafe_allow_html=True)
         st.write("") 
-        
-        # زر الاستعلام
         submit_button = st.button("🔍 عرض بطاقة المتابعة والنتائج", type="primary", use_container_width=True)
 
-    # 5. معالجة الضغط وعرض النتائج
+    # 5. معالجة الضغط وعرض النتائج بناءً على مطابقة الاسم الذكية والآمنة
     if submit_button:
         search_id = national_id.strip()
         if search_id in students_database:
@@ -72,14 +67,27 @@ else:
             st.info(f"📋 **الصف الدراسي:** {student['class']}")
             st.markdown("</div>", unsafe_allow_html=True)
             
-            # مسار الصورة مغلق ومصحح تماماً وبدون أخطاء وبمحاذاة دقيقة
-            image_path = student['card_image']
+            # محاولة البحث عن الصورة بالاسم المباشر المكتوب داخل البطاقة أولاً، ثم بالرقم كخيار احتياطي
+            clean_name = student['name'].replace("بن ", "").replace(" ", "_")
+            possible_names = [
+                f"student_{student['card_num']}.png",
+                f"{student['name']}.png",
+                f"{clean_name}.png"
+            ]
+            
+            image_path = ""
+            for p_name in possible_names:
+                if os.path.exists(p_name):
+                    image_path = p_name
+                    break
+                    
+            if not image_path:
+                image_path = f"student_{student['card_num']}.png"
             
             if os.path.exists(image_path):
-                                st.image(image_path, use_container_width=True)
-
+                st.image(image_path, use_container_width=True)
             else:
-                st.warning(f"⚠️ تم التحقق من السجل، ولكن لم يتم العثور على ملف الصورة: {image_path} بداخل السيرفر.")
+                st.warning(f"⚠️ تم التحقق من السجل، ولكن لم يتم العثور على ملف الصورة بداخل السيرفر.")
         else:
             st.markdown("<div style='direction: rtl; text-align: right;'>", unsafe_allow_html=True)
             st.error("❌ عذراً، رقم السجل المدني غير صحيح أو غير مسجل في النظام الدراسي للعام الحالي!")
