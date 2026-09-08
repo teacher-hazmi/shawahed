@@ -67,22 +67,19 @@ else:
         if search_id in students_database:
             student = students_database[search_id]
             
-            st.markdown(f"<div style='direction: rtl; text-align: right;'>", unsafe_allow_html=True)
+            st.markdown("<div style='direction: rtl; text-align: right;'>", unsafe_allow_html=True)
             st.success(f"✨ تم التحقق بنجاح! مرحباً بولي أمر الطالب: **{student['name']}**")
             st.info(f"📋 **الصف الدراسي:** {student['class']}")
-            st.markdown(f"</div>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
             
-            # مسار الصورة مغلق ومصحح تماماً وبدون أخطاء
+            # مسار الصورة مغلق ومصحح تماماً وبدون أخطاء وبمحاذاة دقيقة
             image_path = student['card_image']
             
-                        if os.path.exists(image_path):
+            if os.path.exists(image_path):
                 st.image(image_path, use_column_width=True)
             else:
-                st.warning(f"⚠️ لم يتم العثور على ملف الصورة: {image_path}")
-
-
                 st.warning(f"⚠️ تم التحقق من السجل، ولكن لم يتم العثور على ملف الصورة: {image_path} بداخل السيرفر.")
         else:
-            st.markdown(f"<div style='direction: rtl; text-align: right;'>", unsafe_allow_html=True)
+            st.markdown("<div style='direction: rtl; text-align: right;'>", unsafe_allow_html=True)
             st.error("❌ عذراً، رقم السجل المدني غير صحيح أو غير مسجل في النظام الدراسي للعام الحالي!")
-            st.markdown(f"</div>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
