@@ -75,9 +75,11 @@ else:
             # مسار الصورة مغلق ومصحح تماماً وبدون أخطاء
             image_path = student['card_image']
             
-            if os.path.exists(image_path):
-                            if os.path.exists(image_path):
+                        if os.path.exists(image_path):
                 st.image(image_path, use_column_width=True)
+            else:
+                st.warning(f"⚠️ لم يتم العثور على ملف الصورة: {image_path}")
+
 
                 st.warning(f"⚠️ تم التحقق من السجل، ولكن لم يتم العثور على ملف الصورة: {image_path} بداخل السيرفر.")
         else:
