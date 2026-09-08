@@ -72,7 +72,7 @@ else:
             st.info(f"📋 **الصف الدراسي:** {student['class']}")
             st.markdown(f"</div>", unsafe_allow_html=True)
             
-            # تحديد مسار الصورة داخل السيرفر مباشرة بشكل صحيح ومغلق
+            # تحديد مسار الصورة داخل السيرفر مباشرة بشكل صحيح ومغلق وموزون تماماً
             image_path = student['card_image']
             
             if os.path.exists(image_path):
