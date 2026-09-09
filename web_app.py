@@ -26,7 +26,7 @@ st.markdown("""
 # العبارة الترحيبية الدقيقة والمخصصة بناءً على طلبك
 st.markdown("<p style='text-align: right; color: #4B5563; font-size: 15px; direction: rtl; font-weight: bold;'>اعزائي اولياء الأمور لتسهيل متابعة ابناءكم في مادة مهارات رقمية ومعرفة مستواهم يرجي كتابة السجل المدني في الاسفل</p>", unsafe_allow_html=True)
 
-# 3. دالة ذكية لقراءة ملف الإكسل المرفوع مباشرة في السيرفر
+# 3. دالة ذكية لقراءة ملف الإكسل المرفوع مباشرة في السيرفر مع حماية البيانات الفارغة
 @st.cache_data
 def load_students_from_excel():
     excel_file = "students_data.xlsx"
@@ -35,10 +35,18 @@ def load_students_from_excel():
         db = {}
         for _, row in df.iterrows():
             sec_id = str(row["السجل المدني"]).strip()
+            
+            # حماية ذكية ضد القيمة الفارغة في رقم الصورة
+            try:
+                card_val = str(row["رقم الصورة"]).strip().split('.')[0]
+                card_num = int(card_val) if card_val.isdigit() else 0
+            except:
+                card_num = 0
+                
             db[sec_id] = {
                 "name": str(row["اسم الطالب"]).strip(),
                 "class": row["الصف"],
-                "card_num": int(row["رقم الصورة"])
+                "card_num": card_num
             }
         return db
     return {}
@@ -67,7 +75,7 @@ else:
             st.info(f"📋 **الصف الدراسي:** {student['class']}")
             st.markdown("</div>", unsafe_allow_html=True)
             
-            # تحديد مسار الصورة بناءً على أرقام الجدول المصححة
+            # تحديد مسار الصورة بناءً على أرقام الجدول المصححة يدوياً
             image_path = f"student_{student['card_num']}.png"
             
             if os.path.exists(image_path):
