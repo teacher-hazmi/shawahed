@@ -5,13 +5,18 @@ import os
 # 1. إعدادات الصفحة الأساسية للموقع
 st.set_page_config(page_title="بوابة شواهد الرقمية", page_icon="🎓", layout="centered")
 
-# إضافة كود تنسيقي خارق لتنفيذ التنسيقات البصرية الستة ومحاذاة النصوص والبرواز
+# إضافة كود تنسيقي خارق لتنفيذ التنسيقات البصرية وإخفاء العبارة الإنجليزية
 st.markdown("""
 <style>
 /* ضبط محاذاة كل نصوص المتصفح والمخرجات لتكون من اليمين لليسار */
 .stMarkdown p, p, h1, h3, div { text-align: right !important; direction: rtl !important; }
 
-/* 4. برواز وتوهج ملفت جداً على جملة أعزائي أولياء الأمور */
+/* 🌟 السطر السحري لإخفاء جملة Press Enter to apply تماماً ومنع ظهورها 🌟 */
+div[data-testid="InputInstruction"] {
+    display: none !important;
+}
+
+/* برواز وتوهج ملفت جداً على جملة أعزائي أولياء الأمور */
 .welcome-box {
     border: 2px dashed #FF5722 !important;     /* إطار برتقالي متقطع ملفت */
     background-color: #FFF3E0 !important;     /* خلفية صفراء هادئة ومريحة تشد الانتباه */
@@ -21,7 +26,7 @@ st.markdown("""
     box-shadow: 0px 4px 10px rgba(255, 87, 34, 0.1) !important;
 }
 
-/* 5. إجبار النص المؤقت بداخل مستطيل السجل المدني على الاستقرار في جهة اليمين تماماً */
+/* إجبار النص المؤقت بداخل مستطيل السجل المدني على الاستقرار في جهة اليمين تماماً */
 input {
     text-align: right !important;
     direction: rtl !important;
@@ -64,18 +69,17 @@ div.stButton > button:first-child:hover {
 </style>
 """, unsafe_allow_html=True)
 
-# 2. تصميم الترويسة العلوية بدمج (الطلبات: 1 و 2 و 3 بالألوان الزاهية والذهبية)
+# 2. تصميم الترويسة العلوية بدمج الهوية الزاهية والذهبية
 st.markdown("""
 <div style="background: linear-gradient(135deg, #1E3A8A, #2563EB); padding: 25px; border-radius: 12px; margin-bottom: 30px; direction: rtl; text-align: right; box-shadow: 0px 4px 15px rgba(37, 99, 235, 0.25);">
 <h1 style="color: white; font-family: 'Arial'; margin: 0; font-size: 26px; font-weight: bold;">🎓 بوابة الشواهد الرقمية</h1>
 <p style="color: #93C5FD; font-size: 16px; margin: 6px 0 0 0; font-weight: bold;">📊 ومتابعة الطلاب في مهامهم الأدائية والتحريرية</p>
 <h3 style="color: #34D399; font-family: 'Arial'; margin: 12px 0 0 0; font-size: 18px; font-weight: bold;">🖥️ مادة المهارات الرقمية - للمعلم طارق الحازمي</h3>
-<!-- 🌟 المدارس بلون أصفر ذهبي مميز وزاهٍ خطاف للأنظار -->
 <p style="color: #FBBF24; font-size: 15px; margin: 10px 0 0 0; font-weight: bold; font-family: 'Arial';">🏫 ابتدائية أحمد بن حنبل & متوسطة الشقيري</p>
 </div>
 """, unsafe_allow_html=True)
 
-# 4. عرض البرواز المخصص والملفت على جملة أعزائي أولياء الأمور
+# عرض البرواز المخصص والملفت على جملة أعزائي أولياء الأمور
 st.markdown("""
 <div class="welcome-box">
 <p style="color: #D84315; font-size: 16px; font-weight: bold; margin: 0; line-height: 1.6;">
@@ -127,10 +131,10 @@ def load_students_from_excel():
 
 students_db = load_students_from_excel()
 
-# 5. خانة إدخال السجل المدني (الكتابة بداخل المستطيل تبدأ من اليمين بالملي وعليها علامة 🔍)
-search_id = st.text_input("", placeholder="🔍 أدخل رقم السجل المدني هنا للبحث...", key="national_id_ultimate_burst_v4")
+# خانة إدخال السجل المدني الممسوحة
+search_id = st.text_input("", placeholder="🔍 أدخل رقم السجل المدني هنا للبحث...", key="national_id_ultimate_burst_final_v5")
 
-# 6. زر البحث الفعال والأنيق في اليمين مباشرة
+# زر البحث الفعال والأنيق في اليمين مباشرة
 btn_search = st.button("🔍 ابدأ الاستعلام والبحث")
 
 if students_db == "error_col":
@@ -143,7 +147,6 @@ elif btn_search or search_id:
             st.success(f"🔹 تم التحقق بنجاح! مرحباً بولي أمر الطالب: {student['name']}")
             st.info(f"📋 الصف الدراسي: {student['class']}")
             
-            # عرض صورة بطاقة الطالب
             image_name = f"student_{student['image_num']}.png"
             image_path = os.path.join("images", image_name) if os.path.exists("images") else image_name
             
