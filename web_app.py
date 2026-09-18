@@ -27,7 +27,7 @@ div[data-baseweb="input"] {
 # 2. تصميم الترويسة العلوية باللون الأزرق الملكي الفخم
 st.markdown("""
 <div style="background-color: #1E3A8A; padding: 20px; border-radius: 10px; margin-bottom: 25px; direction: rtl;">
-<h1 style="text-align: right; color: white; font-family: 'Arial'; margin: 0; padding-right: 10px;">🎓 بوابة شواهد التعليمية</h1>
+<h1 style="text-align: right; color: white; font-family: 'Arial'; margin: 0; padding-right: 10px;">🎓 بوابة شواهد Educational Portal</h1>
 <p style="text-align: right; color: #E5E7EB; font-size: 16px; margin: 10px 10px 0 0; padding-right: 10px;">نظام الاستعلام الذكي عن بطاقات المتابعة والنتائج</p>
 </div>
 """, unsafe_allow_html=True)
@@ -35,36 +35,54 @@ st.markdown("""
 # العبارة الترحيبية
 st.markdown('<p style="text-align: right; color: #4B5563; font-size: 15px; direction: rtl; font-weight: bold;">أعزائي أولياء الأمور، لتسهيل متابعة أبنائكم في مادة مهارات رقمية ومعرفة مستواهم يرجى كتابة السجل المدني في الأسفل:</p>', unsafe_allow_html=True)
 
-# 3. دالة ذكية مرنة لقراءة ملف إكسل وتفادي أخطاء أسماء الأعمدة والتنسيقات
+# 3. دالة ذكية خارقة لقراءة ملف إكسل وتفادي أخطاء أسماء الأعمدة بالكامل
 @st.cache_data
 def load_students_from_excel():
     excel_file = "students_data.xlsx"
     if os.path.exists(excel_file):
         df = pd.read_excel(excel_file)
         
-        # البحث الذكي عن عمود السجل المدني
-        id_col = None
+        # البحث الذكي عن الأعمدة بناءً على الكلمات المفتاحية لتفادي المسافات والأخطاء الإملائية
+        id_col, name_col, class_col, num_col = None, None, None, None
+        
         for col in df.columns:
-            if "سجل" in str(col) or "مدني" in str(col) or "هوية" in str(col) or "ID" in str(col).upper():
+            col_str = str(col).strip()
+            if "سجل" in col_str or "مدني" in col_str or "هوية" in col_str or "ID" in col_str.upper():
                 id_col = col
-                break
-                
-        if id_col is None:
+            elif "اسم" in col_str or "طالب" in col_str or "NAME" in col_str.upper():
+                if "رقم" not in col_str and "NUM" not in col_str.upper():
+                    name_col = col
+            elif "صف" in col_str or "فصل" in col_str or "درج" in col_str or "CLASS" in col_str.upper() or "GRADE" in col_str.upper():
+                class_col = col
+            elif "رقم" in col_str or "تسلسل" in col_str or "NUM" in col_str.upper():
+                if "سجل" not in col_str and "مدني" not in col_str:
+                    num_col = col
+                    
+        # حل احتياطي لو لم يجد عمود رقم الطالب صراحة
+        if num_col is None and name_col is not None:
+            num_col = df.columns[-1] # افترض العمود الأخير
+            
+        if id_col is None or name_col is None:
             return "error_col"
             
         db = {}
         for _, row in df.iterrows():
-            # تحويل القيمة لنص صريح وتنظيفها بالكامل من أي علامات أو فواصل عشرية قد يضعها الإكسل
             val = str(row[id_col]).strip()
-            if val.endswith('.0'):
-                sec_id = val[:-2]
-            else:
-                sec_id = val
+            sec_id = val.split('.')[0] if '.' in val else val
+            
+            # جلب البيانات بأمان وتفادي غياب أي عمود
+            s_name = str(row[name_col]).strip() if name_col else "طالب"
+            s_class = str(row[class_col]).strip() if class_col else "المرحلة المتوسطة"
+            
+            try:
+                s_num = int(float(row[num_col])) if num_col else 0
+            except:
+                s_num = 0
                 
             db[sec_id] = {
-                "name": row["اسم الطالب"],
-                "class": row["الصف الدراسي"],
-                "image_num": row["رقم الطالب"]
+                "name": s_name,
+                "class": s_class,
+                "image_num": s_num
             }
         return db
     return {}
@@ -75,7 +93,7 @@ students_db = load_students_from_excel()
 search_id = st.text_input("", placeholder="أدخل رقم السجل المدني هنا...", key="national_id_input")
 
 if students_db == "error_col":
-    st.error("⚠️ خطأ في ملف الإكسل: لم يتم العثور على عمود باسم 'السجل المدني'. يرجى التأكد من تسمية العمود في ملفك بدقة.")
+    st.error("⚠️ خطأ في ملف الإكسل: لم نتمكن من التعرف على أعمدة البيانات الأساسية (السجل أو الاسم). يرجى مراجعة الجدول.")
 elif search_id:
     search_id = search_id.strip()
     if search_id in students_db:
@@ -93,4 +111,3 @@ elif search_id:
             st.warning(f"⚠️ تم التحقق، ولكن لم يتم العثور على ملف الصورة: {image_name}")
     else:
         st.error("❌ رقم السجل المدني غير مسجل في النظام، يرجى التأكد من الرقم والمحاولة مجدداً.")
-      
