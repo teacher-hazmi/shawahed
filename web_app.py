@@ -5,28 +5,37 @@ import os
 # 1. إعدادات الصفحة الأساسية للموقع
 st.set_page_config(page_title="بوابة شواهد الرقمية", page_icon="🎓", layout="centered")
 
-# إضافة كود تنسيقي لجعل واجهة الموقع تدعم اللغة العربية من اليمين لليسار بالكامل
+# | إضافة كود تنسيقي لجعل واجهة الموقع تدعم اللغة العربية من اليمين لليسار بالكامل وتوضيح خانة السجل
 st.markdown("""
-    <style>
-        .stTextInput align-items { direction: rtl !important; text-align: right !important; }
-        div[data-baseweb="input"] { direction: rtl !important; text-align: right !important; }
-        p, label { text-align: right !important; direction: rtl !important; width: 100%; }
-        .stButton button { direction: rtl !important; }
-    </style>
+<style>
+/* دعم اللغة العربية والمحاذاة لليمين */
+.stTextInput align-items { direction: rtl !important; text-align: right !important; }
+.st_label { text-align: right !important; direction: rtl !important; width: 100%; }
+.stButton button { direction: rtl !important; }
+
+/* 🔥 التعديل الذهبي: تمييز خانة السجل المدني وخلفيتها لتصبح واضحة جداً لأولياء الأمور */
+div[data-baseweb="input"] { 
+    direction: rtl !important; 
+    text-align: right !important; 
+    border: 2px solid #1A365D !important;   /* إطار كحلي عريض وفخم يفصلها عن السطر تماماً */
+    border-radius: 8px !important;         /* انحناء أنيق وعصري للحواف */
+    background-color: #FFFFFF !important;   /* فرض خلفية بيضاء ناصعة مكان الكتابة لمنع التداخل */
+}
+</style>
 """, unsafe_allow_html=True)
 
-# 2. تصميم الترويسة العلوية باللون الأزرق الملكي
+# 2. تصميم الترويسة العلوية باللون الأزرق الملكي الفخم
 st.markdown("""
-    <div style='background-color: #1E3A8A; padding: 20px; border-radius: 10px; margin-bottom: 25px; direction: rtl;'>
-        <h1 style='text-align: right; color: white; font-family: "Arial"; margin: 0; padding-right: 10px;'>🎓 بوابة شواهد التعليمية</h1>
-        <p style='text-align: right; color: #E5E7EB; font-size: 16px; margin: 10px 0 0 0; padding-right: 10px;'>مدرسة أحمد بن حنبل - نظام الاستعلام الذكي عن بطاقات المتابعة</p>
-    </div>
+<div style="background-color: #1E3A8A; padding: 20px; border-radius: 10px; margin-bottom: 25px; direction: rtl;">
+<h1 style="text-align: right; color: white; font-family: 'Arial'; margin: 0; padding-right: 10px;">🎓 بوابة شواهد التعليمية</h1>
+<p style="text-align: right; color: #E5E7EB; font-size: 16px; margin: 10px 10px 0 0; padding-right: 10px;">نظام الاستعلام الذكي عن بطاقات المتابعة والنتائج</p>
+</div>
 """, unsafe_allow_html=True)
 
 # العبارة الترحيبية الدقيقة والمخصصة بناءً على طلبك
-st.markdown("<p style='text-align: right; color: #4B5563; font-size: 15px; direction: rtl; font-weight: bold;'>اعزائي اولياء الأمور لتسهيل متابعة ابناءكم في مادة مهارات رقمية ومعرفة مستواهم يرجي كتابة السجل المدني في الاسفل</p>", unsafe_allow_html=True)
+st.markdown('<p style="text-align: right; color: #4B5563; font-size: 15px; direction: rtl; font-weight: bold;">أعزائي أولياء الأمور، لتسهيل متابعة أبنائكم في مادة مهارات رقمية ومعرفة مستواهم يرجى كتابة السجل المدني في الأسفل:</p>', unsafe_allow_html=True)
 
-# 3. دالة ذكية لقراءة ملف الإكسل المرفوع مباشرة في السيرفر مع حماية البيانات الفارغة
+# 3. دالة ذكية لقراءة ملف إكسل المحدث المرفوع مباشرة في السيرفر
 @st.cache_data
 def load_students_from_excel():
     excel_file = "students_data.xlsx"
@@ -35,54 +44,35 @@ def load_students_from_excel():
         db = {}
         for _, row in df.iterrows():
             sec_id = str(row["السجل المدني"]).strip()
-            
-            # حماية ذكية ضد القيمة الفارغة في رقم الصورة
-            try:
-                card_val = str(row["رقم الصورة"]).strip().split('.')[0]
-                card_num = int(card_val) if card_val.isdigit() else 0
-            except:
-                card_num = 0
-                
             db[sec_id] = {
-                "name": str(row["اسم الطالب"]).strip(),
-                "class": row["الصف"],
-                "card_num": card_num
+                "name": row["اسم الطالب"],
+                "class": row["الصف الدراسي"],
+                "image_num": row["رقم الطالب"]
             }
         return db
     return {}
 
-students_database = load_students_from_excel()
+students_db = load_students_from_excel()
 
-# 4. تصميم صندوق الدخول والاستعلام المحاذي لليمن
-if not students_database:
-    st.error("⚠️ لم يتم العثور على قاعدة البيانات الشاملة للطلاب 'students_data.xlsx' في السيرفر.")
-else:
-    with st.container():
-        st.markdown("<div style='background-color: #F3F4F6; padding: 25px; border-radius: 8px; border: 1px solid #E5E7EB; direction: rtl; text-align: right;'>", unsafe_allow_html=True)
-        national_id = st.text_input("🔑 رقم السجل المدني للطالب:", max_chars=10)
-        st.markdown("</div>", unsafe_allow_html=True)
-        st.write("") 
-        submit_button = st.button("🔍 عرض بطاقة المتابعة والنتائج", type="primary", use_container_width=True)
+# خانة إدخال السجل المدني
+search_id = st.text_input("", placeholder="أدخل رقم السجل المدني هنا...", key="national_id_input")
 
-    # 5. معالجة الضغط وعرض النتائج
-    if submit_button:
-        search_id = national_id.strip()
-        if search_id in students_database:
-            student = students_database[search_id]
-            
-            st.markdown("<div style='direction: rtl; text-align: right;'>", unsafe_allow_html=True)
-            st.success(f"✨ تم التحقق بنجاح! مرحباً بولي أمر الطالب: **{student['name']}**")
-            st.info(f"📋 **الصف الدراسي:** {student['class']}")
-            st.markdown("</div>", unsafe_allow_html=True)
-            
-            # تحديد مسار الصورة بناءً على أرقام الجدول المصححة يدوياً
-            image_path = f"student_{student['card_num']}.png"
-            
-            if os.path.exists(image_path):
-                st.image(image_path, use_container_width=True)
-            else:
-                st.warning(f"⚠️ تم التحقق من السجل، ولكن لم يتم العثور على ملف الصورة: {image_path} بداخل السيرفر الجديد.")
+if search_id:
+    search_id = search_id.strip()
+    if search_id in students_db:
+        student = students_db[search_id]
+        st.success(f"🔹 تم التحقق بنجاح! مرحباً بولي أمر الطالب: {student['name']}")
+        st.info(f"📋 الصف الدراسي: {student['class']}")
+        
+        # عرض صورة بطاقة الطالب المتوافقة مع الرقم التلقائي
+        image_name = f"student_{student['image_num']}.png"
+        image_path = os.path.join("images", image_name) if os.path.exists("images") else image_name
+        
+        if os.path.exists(image_path) or os.path.exists(image_name):
+            st.image(image_path if os.path.exists(image_path) else image_name, use_container_width=True)
         else:
-            st.markdown("<div style='direction: rtl; text-align: right;'>", unsafe_allow_html=True)
-            st.error("❌ عذراً، رقم السجل المدني غير صحيح أو غير مسجل في النظام الدراسي للعام الحالي!")
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.warning(f"⚠️ تم التحقق من السجل، ولكن لم يتم العثور على ملف الصورة: {image_name} بداخل السيرفر الجديد.")
+    else:
+        st.error("❌ رقم السجل المدني غير مسجل في النظام، يرجى التأكد من الرقم والمحاولة مجدداً.")
+
+           
