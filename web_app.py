@@ -11,22 +11,22 @@ st.markdown("""
 /* ضبط محاذاة كل نصوص المتصفح والمخرجات لتكون من اليمين لليسار */
 .stMarkdown p, p, h1, h3, div { text-align: right !important; direction: rtl !important; }
 
-/* 🌟 السطر السحري لإخفاء جملة Press Enter to apply تماماً ومنع ظهورها 🌟 */
+/* إخفاء جملة Press Enter to apply تماماً ومنع ظهورها */
 div[data-testid="InputInstruction"] {
     display: none !important;
 }
 
 /* برواز وتوهج ملفت جداً على جملة أعزائي أولياء الأمور */
 .welcome-box {
-    border: 2px dashed #FF5722 !important;     /* إطار برتقالي متقطع ملفت */
-    background-color: #FFF3E0 !important;     /* خلفية صفراء هادئة ومريحة تشد الانتباه */
+    border: 2px dashed #FF5722 !important;
+    background-color: #FFF3E0 !important;
     padding: 15px !important;
     border-radius: 10px !important;
     margin-bottom: 25px !important;
     box-shadow: 0px 4px 10px rgba(255, 87, 34, 0.1) !important;
 }
 
-/* إجبار النص المؤقت بداخل مستطيل السجل المدني على الاستقرار في جهة اليمين تماماً */
+/* إجبار النص بداخل مستطيل السجل المدني على الاستقرار في جهة اليمين تماماً */
 input {
     text-align: right !important;
     direction: rtl !important;
@@ -47,7 +47,7 @@ div[data-testid="stTextInput"] {
 
 /* تمييز إطار خانة السجل المدني بلون زاهٍ متناسق */
 div[data-baseweb="input"] { 
-    border: 2.5px solid #1E3A8A !important;  /* إطار كحلي فخم وثابت */
+    border: 2.5px solid #1E3A8A !important;
     border-radius: 8px !important; 
     background-color: #FFFFFF !important; 
 }
@@ -79,7 +79,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# عرض البرواز المخصص والملفت على جملة أعزائي أولياء الأمور
 st.markdown("""
 <div class="welcome-box">
 <p style="color: #D84315; font-size: 16px; font-weight: bold; margin: 0; line-height: 1.6;">
@@ -132,7 +131,7 @@ def load_students_from_excel():
 students_db = load_students_from_excel()
 
 # خانة إدخال السجل المدني الممسوحة
-search_id = st.text_input("", placeholder="🔍 أدخل رقم السجل المدني هنا للبحث...", key="national_id_ultimate_burst_final_v5")
+search_id = st.text_input("", placeholder="🔍 أدخل رقم السجل المدني هنا للبحث...", key="national_id_ultimate_burst_final_v6")
 
 # زر البحث الفعال والأنيق في اليمين مباشرة
 btn_search = st.button("🔍 ابدأ الاستعلام والبحث")
@@ -147,6 +146,19 @@ elif btn_search or search_id:
             st.success(f"🔹 تم التحقق بنجاح! مرحباً بولي أمر الطالب: {student['name']}")
             st.info(f"📋 الصف الدراسي: {student['class']}")
             
+            # 🌟 التطوير الجديد: زر انتقال مباشر يفتح ما بداخل باركود الطالب تلقائياً 🌟
+            # 💡 ملاحظة: إذا كان الرابط القديم للباركود يحتوي على تركيبة معينة، يمكنك تعديل الرابط أدناه ليطابقه بالملي
+            barcode_link = f"https://streamlit.app{student['image_num']}"
+            
+            st.markdown(f"""
+            <div style="text-align: right; margin-top: 15px; margin-bottom: 15px;">
+            <a href="{barcode_link}" target="_blank" style="background-color: #10B981; color: white; padding: 10px 20px; text-decoration: none; font-weight: bold; border-radius: 8px; box-shadow: 0px 4px 10px rgba(16, 185, 129, 0.3);">
+            🔗 اضغط هنا للانتقال المباشر لشواهد الطالب (محتوى الباركود)
+            </a>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # عرض صورة بطاقة الطالب كخيار إضافي مألوف لولي الأمر
             image_name = f"student_{student['image_num']}.png"
             image_path = os.path.join("images", image_name) if os.path.exists("images") else image_name
             
