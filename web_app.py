@@ -1,4 +1,4 @@
- import streamlit as st
+import streamlit as st
 import pandas as pd
 import os
 
@@ -55,7 +55,8 @@ def load_students_from_excel():
         db = {}
         for _, row in df.iterrows():
             # سطر تنظيف رقم السجل بالكامل وتفادي أخطاء التنسيق
-            sec_id = str(row[id_col]).strip().split('.')[0]
+            val = str(row[id_col]).strip()
+            sec_id = val.split('.')[0] if '.' in val else val
             db[sec_id] = {
                 "name": row["اسم الطالب"],
                 "class": row["الصف الدراسي"],
@@ -88,5 +89,4 @@ elif search_id:
             st.warning(f"⚠️ تم التحقق، ولكن لم يتم العثور على ملف الصورة: {image_name}")
     else:
         st.error("❌ رقم السجل المدني غير مسجل في النظام، يرجى التأكد من الرقم والمحاولة مجدداً.")
-       
-        
+
