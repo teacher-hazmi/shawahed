@@ -5,49 +5,56 @@ import os
 # 1. إعدادات الصفحة الأساسية للموقع
 st.set_page_config(page_title="بوابة شواهد الرقمية", page_icon="🎓", layout="centered")
 
-# إضافة كود تنسيقي محكم لجذب انتباه أولياء الأمور وتوضيح حقل الإدخال
+# إضافة كود تنسيقي محدث وقوي جداً لتدمير الكاش القديم قسرياً وتثبيت الخانة في اليمين
 st.markdown("""
 <style>
-/* دعم محاذاة النصوص بالكامل جهة اليمين */
-.stMarkdown p { text-align: right !important; direction: rtl !important; }
+/* ضبط محاذاة النصوص بالكامل جهة اليمين */
+.stMarkdown p, p { text-align: right !important; direction: rtl !important; }
 
-/* 🔥 تمييز خانة السجل المدني وجعلها بارزة جداً باللون الكحلي اللامع والخلفية البيضاء */
+/* 🔥 تثبيت وإجبار خانة السجل المدني بالكامل لتكون جهة اليمين غصب عن الكاش */
+div[data-testid="stTextInput"] {
+    width: 60% !important;
+    margin-right: 0 !important;
+    margin-left: auto !important;
+    float: right !important; /* فرض التوجيه جهة اليمين */
+}
+
+/* تمييز خانة السجل المدني لتظهر واضحة جداً بألوان زاهية وبارزة */
 div[data-baseweb="input"] { 
     direction: rtl !important; 
     text-align: right !important; 
-    border: 2.5px solid #1E3A8A !important;  /* إطار كحلي عريض وواضح */
-    border-radius: 10px !important;         /* حواف منحنية جذابة */
-    background-color: #FFFFFF !important;   /* خلفية بيضاء ناصعة تمنع التداخل */
-    box-shadow: 0px 4px 10px rgba(30, 58, 138, 0.1) !important; /* ظل خفيف ملفت للنظر */
+    border: 3px solid #FF5722 !important;   /* إطار برتقالي زاهي وملفت للانتباه */
+    border-radius: 10px !important; 
+    background-color: #FFFFFF !important; 
+    box-shadow: 0px 4px 12px rgba(255, 87, 34, 0.2) !important; /* توهج زاهي وملفت */
 }
 
-/* تنسيق النص المؤقت داخل الخانة ليظهر بوضوح */
 input::placeholder {
-    color: #4B5563 !important;
-    font-weight: 500 !important;
+    color: #4A5568 !important;
+    font-weight: bold !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# 2. تصميم الترويسة العلوية باللون الأزرق الملكي الفخم باللغة العربية بالكامل
+# 2. تصميم الترويسة العلوية بألوان زاهية ومشرقة (تدمج شعار المدارس والمادة صراحة)
 st.markdown("""
-<div style="background-color: #1E3A8A; padding: 25px; border-radius: 12px; margin-bottom: 30px; direction: rtl; text-align: right;">
-<h1 style="color: white; font-family: 'Arial'; margin: 0; padding-right: 5px; font-size: 28px;">🎓 بوابة شواهد الرقمية</h1>
-<p style="color: #E5E7EB; font-size: 16px; margin: 12px 5px 0 0; font-weight: 500;">نظام الاستعلام الذكي عن بطاقات المتابعة والنتائج</p>
+<div style="background: linear-gradient(135deg, #1E3A8A, #3B82F6); padding: 25px; border-radius: 12px; margin-bottom: 30px; direction: rtl; text-align: right; box-shadow: 0px 4px 15px rgba(59, 130, 246, 0.2);">
+<h1 style="color: white; font-family: 'Arial'; margin: 0; padding-right: 5px; font-size: 26px;">🎓 بوابة شواهد الرقمية</h1>
+<h3 style="color: #FDE047; font-family: 'Arial'; margin: 8px 5px 0 0; font-size: 18px; font-weight: bold;">📚 مادة المهارات الرقمية</h3>
+<p style="color: #E5E7EB; font-size: 15px; margin: 10px 5px 0 0; font-weight: 500;">🏫 ابتدائية أحمد بن حنبل & متوسطة الشقيري</p>
 </div>
 """, unsafe_allow_html=True)
 
-# العبارة الترحيبية بخط عريض ولون مريح لجذب الانتباه
+# العبارة الترحيبية الدقيقة والمخصصة
 st.markdown('<p style="color: #1F2937; font-size: 16px; font-weight: bold; margin-bottom: 15px;">أعزائي أولياء الأمور، لتسهيل متابعة أبنائكم في مادة مهارات رقمية ومعرفة مستواهم يرجى كتابة السجل المدني في الأسفل:</p>', unsafe_allow_html=True)
 
-# 3. دالة ذكية مرنة لقراءة ملف إكسل وتفادي أخطاء أسماء الأعمدة والتنسيقات
+# 3. دالة ذكية مرنة لقراءة ملف إكسل وتفادي أخطاء أسماء الأعمدة
 @st.cache_data
 def load_students_from_excel():
     excel_file = "students_data.xlsx"
     if os.path.exists(excel_file):
         df = pd.read_excel(excel_file)
         
-        # البحث الذكي عن الأعمدة بناءً على الكلمات المفتاحية
         id_col, name_col, class_col, num_col = None, None, None, None
         for col in df.columns:
             col_str = str(col).strip()
@@ -90,8 +97,8 @@ def load_students_from_excel():
 
 students_db = load_students_from_excel()
 
-# خانة إدخال السجل المدني مع كتابة نص توضيحي بداخلها
-search_id = st.text_input("", placeholder="🔍 أدخل رقم السجل المدني هنا لفتح البطاقة...", key="national_id_input")
+# 💡 تغيير المفتاح (key) قسرياً لتدمير كاش المتصفح القديم فوراً
+search_id = st.text_input("", placeholder="🔍 أدخل رقم السجل المدني هنا لفتح البطاقة...", key="national_id_new_burst_v2")
 
 if students_db == "error_col":
     st.error("⚠️ خطأ في ملف الإكسل: لم نتمكن من التعرف على أعمدة البيانات الأساسية (السجل أو الاسم).")
