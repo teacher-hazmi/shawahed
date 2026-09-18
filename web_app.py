@@ -5,46 +5,50 @@ import os
 # 1. إعدادات الصفحة الأساسية للموقع
 st.set_page_config(page_title="بوابة شواهد الرقمية", page_icon="🎓", layout="centered")
 
-# إضافة كود تنسيقي لجعل واجهة الموقع تدعم اللغة العربية بالكامل وتبرز خانة السجل المدني
+# إضافة كود تنسيقي محكم لجذب انتباه أولياء الأمور وتوضيح حقل الإدخال
 st.markdown("""
 <style>
-/* دعم اللغة العربية والمحاذاة لليمين */
-.stTextInput align-items { direction: rtl !important; text-align: right !important; }
-.st_label { text-align: right !important; direction: rtl !important; width: 100%; }
-.stButton button { direction: rtl !important; }
+/* دعم محاذاة النصوص بالكامل جهة اليمين */
+.stMarkdown p { text-align: right !important; direction: rtl !important; }
 
-/* تمييز خانة السجل المدني لتصبح واضحة وبارزة جداً لأولياء الأمور */
+/* 🔥 تمييز خانة السجل المدني وجعلها بارزة جداً باللون الكحلي اللامع والخلفية البيضاء */
 div[data-baseweb="input"] { 
     direction: rtl !important; 
     text-align: right !important; 
-    border: 2px solid #1E3A8A !important;   /* إطار كحلي عريض وفخم */
-    border-radius: 8px !important;         /* انحناء أنيق للحواف */
-    background-color: #FFFFFF !important;   /* فرض خلفية بيضاء ناصعة مكان الكتابة */
+    border: 2.5px solid #1E3A8A !important;  /* إطار كحلي عريض وواضح */
+    border-radius: 10px !important;         /* حواف منحنية جذابة */
+    background-color: #FFFFFF !important;   /* خلفية بيضاء ناصعة تمنع التداخل */
+    box-shadow: 0px 4px 10px rgba(30, 58, 138, 0.1) !important; /* ظل خفيف ملفت للنظر */
+}
+
+/* تنسيق النص المؤقت داخل الخانة ليظهر بوضوح */
+input::placeholder {
+    color: #4B5563 !important;
+    font-weight: 500 !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# 2. تصميم الترويسة العلوية باللون الأزرق الملكي الفخم
+# 2. تصميم الترويسة العلوية باللون الأزرق الملكي الفخم باللغة العربية بالكامل
 st.markdown("""
-<div style="background-color: #1E3A8A; padding: 20px; border-radius: 10px; margin-bottom: 25px; direction: rtl;">
-<h1 style="text-align: right; color: white; font-family: 'Arial'; margin: 0; padding-right: 10px;">🎓 بوابة شواهد Educational Portal</h1>
-<p style="text-align: right; color: #E5E7EB; font-size: 16px; margin: 10px 10px 0 0; padding-right: 10px;">نظام الاستعلام الذكي عن بطاقات المتابعة والنتائج</p>
+<div style="background-color: #1E3A8A; padding: 25px; border-radius: 12px; margin-bottom: 30px; direction: rtl; text-align: right;">
+<h1 style="color: white; font-family: 'Arial'; margin: 0; padding-right: 5px; font-size: 28px;">🎓 بوابة شواهد الرقمية</h1>
+<p style="color: #E5E7EB; font-size: 16px; margin: 12px 5px 0 0; font-weight: 500;">نظام الاستعلام الذكي عن بطاقات المتابعة والنتائج</p>
 </div>
 """, unsafe_allow_html=True)
 
-# العبارة الترحيبية
-st.markdown('<p style="text-align: right; color: #4B5563; font-size: 15px; direction: rtl; font-weight: bold;">أعزائي أولياء الأمور، لتسهيل متابعة أبنائكم في مادة مهارات رقمية ومعرفة مستواهم يرجى كتابة السجل المدني في الأسفل:</p>', unsafe_allow_html=True)
+# العبارة الترحيبية بخط عريض ولون مريح لجذب الانتباه
+st.markdown('<p style="color: #1F2937; font-size: 16px; font-weight: bold; margin-bottom: 15px;">أعزائي أولياء الأمور، لتسهيل متابعة أبنائكم في مادة مهارات رقمية ومعرفة مستواهم يرجى كتابة السجل المدني في الأسفل:</p>', unsafe_allow_html=True)
 
-# 3. دالة ذكية خارقة لقراءة ملف إكسل وتفادي أخطاء أسماء الأعمدة بالكامل
+# 3. دالة ذكية مرنة لقراءة ملف إكسل وتفادي أخطاء أسماء الأعمدة والتنسيقات
 @st.cache_data
 def load_students_from_excel():
     excel_file = "students_data.xlsx"
     if os.path.exists(excel_file):
         df = pd.read_excel(excel_file)
         
-        # البحث الذكي عن الأعمدة بناءً على الكلمات المفتاحية لتفادي المسافات والأخطاء الإملائية
+        # البحث الذكي عن الأعمدة بناءً على الكلمات المفتاحية
         id_col, name_col, class_col, num_col = None, None, None, None
-        
         for col in df.columns:
             col_str = str(col).strip()
             if "سجل" in col_str or "مدني" in col_str or "هوية" in col_str or "ID" in col_str.upper():
@@ -58,9 +62,8 @@ def load_students_from_excel():
                 if "سجل" not in col_str and "مدني" not in col_str:
                     num_col = col
                     
-        # حل احتياطي لو لم يجد عمود رقم الطالب صراحة
         if num_col is None and name_col is not None:
-            num_col = df.columns[-1] # افترض العمود الأخير
+            num_col = df.columns[-1]
             
         if id_col is None or name_col is None:
             return "error_col"
@@ -68,12 +71,10 @@ def load_students_from_excel():
         db = {}
         for _, row in df.iterrows():
             val = str(row[id_col]).strip()
-            sec_id = val.split('.')[0] if '.' in val else val
+            sec_id = val[:-2] if val.endswith('.0') else val
             
-            # جلب البيانات بأمان وتفادي غياب أي عمود
             s_name = str(row[name_col]).strip() if name_col else "طالب"
             s_class = str(row[class_col]).strip() if class_col else "المرحلة المتوسطة"
-            
             try:
                 s_num = int(float(row[num_col])) if num_col else 0
             except:
@@ -89,11 +90,11 @@ def load_students_from_excel():
 
 students_db = load_students_from_excel()
 
-# خانة إدخال السجل المدني النظيفة والواضحة
-search_id = st.text_input("", placeholder="أدخل رقم السجل المدني هنا...", key="national_id_input")
+# خانة إدخال السجل المدني مع كتابة نص توضيحي بداخلها
+search_id = st.text_input("", placeholder="🔍 أدخل رقم السجل المدني هنا لفتح البطاقة...", key="national_id_input")
 
 if students_db == "error_col":
-    st.error("⚠️ خطأ في ملف الإكسل: لم نتمكن من التعرف على أعمدة البيانات الأساسية (السجل أو الاسم). يرجى مراجعة الجدول.")
+    st.error("⚠️ خطأ في ملف الإكسل: لم نتمكن من التعرف على أعمدة البيانات الأساسية (السجل أو الاسم).")
 elif search_id:
     search_id = search_id.strip()
     if search_id in students_db:
