@@ -5,7 +5,7 @@ import os
 # 1. إعدادات الصفحة الأساسية للموقع
 st.set_page_config(page_title="بوابة شواهد الرقمية", page_icon="🎓", layout="centered")
 
-# | إضافة كود تنسيقي لجعل واجهة الموقع تدعم اللغة العربية من اليمين لليسار بالكامل وتوضيح خانة السجل
+# | إضافة كود تنسيقي لجعل واجهة الموقع تدعم اللغة العربية بالكامل وتبرز خانة السجل المدني
 st.markdown("""
 <style>
 /* دعم اللغة العربية والمحاذاة لليمين */
@@ -13,13 +13,13 @@ st.markdown("""
 .st_label { text-align: right !important; direction: rtl !important; width: 100%; }
 .stButton button { direction: rtl !important; }
 
-/* 🔥 التعديل الذهبي: تمييز خانة السجل المدني وخلفيتها لتصبح واضحة جداً لأولياء الأمور */
+/* 🔥 التعديل الذهبي: تمييز خانة السجل المدني لتصبح واضحة وبارزة جداً لأولياء الأمور */
 div[data-baseweb="input"] { 
     direction: rtl !important; 
     text-align: right !important; 
-    border: 2px solid #1A365D !important;   /* إطار كحلي عريض وفخم يفصلها عن السطر تماماً */
-    border-radius: 8px !important;         /* انحناء أنيق وعصري للحواف */
-    background-color: #FFFFFF !important;   /* فرض خلفية بيضاء ناصعة مكان الكتابة لمنع التداخل */
+    border: 2px solid #1E3A8A !important;   /* إطار كحلي عريض وفخم يفصلها عن السطر تماماً */
+    border-radius: 8px !important;         /* انحناء أنيق للحواف */
+    background-color: #FFFFFF !important;   /* فرض خلفية بيضاء ناصعة مكان الكتابة */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -32,18 +32,29 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# العبارة الترحيبية الدقيقة والمخصصة بناءً على طلبك
+# العبارة الترحيبية
 st.markdown('<p style="text-align: right; color: #4B5563; font-size: 15px; direction: rtl; font-weight: bold;">أعزائي أولياء الأمور، لتسهيل متابعة أبنائكم في مادة مهارات رقمية ومعرفة مستواهم يرجى كتابة السجل المدني في الأسفل:</p>', unsafe_allow_html=True)
 
-# 3. دالة ذكية لقراءة ملف إكسل المحدث المرفوع مباشرة في السيرفر
+# 3. دالة ذكية مرنة لقراءة ملف إكسل وتفادي أخطاء أسماء الأعمدة
 @st.cache_data
 def load_students_from_excel():
     excel_file = "students_data.xlsx"
     if os.path.exists(excel_file):
-        df = pd.read_excel(excel_file, dtype={"السجل المدني": str})
+        df = pd.read_excel(excel_file)
+        
+        # البحث الذكي عن عمود السجل المدني مهما كان اسمه في ملفك
+        id_col = None
+        for col in df.columns:
+            if "سجل" in str(col) or "مدني" in str(col) or "هوية" in str(col) or "ID" in str(col).upper():
+                id_col = col
+                break
+                
+        if id_col is None:
+            return "error_col" # لم يجد العمود
+            
         db = {}
         for _, row in df.iterrows():
-            sec_id = str(row["السجل المدني"]).strip()
+            sec_id = str(row[id_col]).strip().split('.')[0] # تنظيف الرقم من الفواصل
             db[sec_id] = {
                 "name": row["اسم الطالب"],
                 "class": row["الصف الدراسي"],
@@ -54,25 +65,25 @@ def load_students_from_excel():
 
 students_db = load_students_from_excel()
 
-# خانة إدخال السجل المدني
+# خانة إدخال السجل المدني بدون عنوان مكرر لتظهر نظيفة والحدود واضحة
 search_id = st.text_input("", placeholder="أدخل رقم السجل المدني هنا...", key="national_id_input")
 
-if search_id:
+if students_db == "error_col":
+    st.error("⚠️ خطأ في ملف الإكسل: لم يتم العثور على عمود باسم 'السجل المدني'. يرجى التأكد من تسمية العمود في ملفك بدقة.")
+elif search_id:
     search_id = search_id.strip()
     if search_id in students_db:
         student = students_db[search_id]
         st.success(f"🔹 تم التحقق بنجاح! مرحباً بولي أمر الطالب: {student['name']}")
         st.info(f"📋 الصف الدراسي: {student['class']}")
         
-        # عرض صورة بطاقة الطالب المتوافقة مع الرقم التلقائي
+        # عرض صورة بطاقة الطالب
         image_name = f"student_{student['image_num']}.png"
         image_path = os.path.join("images", image_name) if os.path.exists("images") else image_name
         
         if os.path.exists(image_path) or os.path.exists(image_name):
             st.image(image_path if os.path.exists(image_path) else image_name, use_container_width=True)
         else:
-            st.warning(f"⚠️ تم التحقق من السجل، ولكن لم يتم العثور على ملف الصورة: {image_name} بداخل السيرفر الجديد.")
+            st.warning(f"⚠️ تم التحقق، ولكن لم يتم العثور على ملف الصورة: {image_name}")
     else:
         st.error("❌ رقم السجل المدني غير مسجل في النظام، يرجى التأكد من الرقم والمحاولة مجدداً.")
-
-           
